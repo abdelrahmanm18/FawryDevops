@@ -44,4 +44,34 @@ while getopts "nv" option; do
     esac
 done
 
+
+# OPTIND starts from 1 and it gets increased by one everytime getopts processes an option
+# so we need to return it to 1 so we can process our arguments
+# to ignore the options arguments
+shift $((OPTIND - 1))
+
 ````
+
+Regarding the arguments, i used two simple if conditions to validate the inputs:
+
+ - The first loop to check if there any missing arguments
+ - If one of the arguments were missing, an error msg and usage example will be returned as output.
+
+    ````
+    if [[ -z $1 || -z $2 ]] ; then
+    echo "grep: too few arguments"  ;
+    echo "Usage: $0 [-n] [-v] search_string filename" ;
+    exit
+    fi
+    ````
+
+ - The second loop to check if the file exists or not
+ - if the file was not found, an error msg will be returned.
+
+    ````
+    FILE=$2
+    if [ ! -e $FILE ] ; then
+    echo "grep : $2 : No such file or directory" ;
+    exit
+    fi
+    ````
