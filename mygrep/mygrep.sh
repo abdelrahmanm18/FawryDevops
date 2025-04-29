@@ -14,14 +14,15 @@ while getopts "nv" option; do
 done
 
 
-// OPTIND starts from 1 and it gets increased by one everytime getopts processes an option
-// so we need to return it to 1 so we get process our arguments
-// to ignore the options arguments
+# OPTIND starts from 1 and it gets increased by one everytime getopts processes an option
+# so we need to return it to 1 so we get process our arguments
+# to ignore the options arguments
 shift $((OPTIND - 1))
 
 
-if [ -z $2 ] ; then
-echo "grep: too few arguments" ;
+if [[ -z $1 || -z $2 ]] ; then
+echo "grep: too few arguments"  ;
+echo "Usage: $0 [-n] [-v] search_string filename" ;
 exit
 fi
 
@@ -32,20 +33,37 @@ if [ ! -e $FILE ] ; then
 fi
 
 
-
-i=0
+lineNumber=0
 FLAG=false
-
 # to make the search case-insensitive
 shopt -s nocasematch
 
 
 while IFS= read -r line || [[ -n "$line" ]]; do
-    ((++i))
+    isFound=false
+
+    ((++lineNumber))
+
+
     if [[ "$line" == *$1* ]]; then
-        printf '%d %s\n' $i "$line"
+        isFound=true
+    fi
+
+    if [[ "$invert" == true ]]; then
+        if [[ "$isFound" == true ]]; then
+            isFound=false
+        else
+            isFound=true
+        fi
+    fi
+
+    if [[ "$isFound" == true ]]; then
+        if [[ "$show_number" == true ]]; then
+            printf '%d %s %s\n' "$lineNumber" : "$line"
+        else
+            printf '%s\n' "$line"
+        fi
         FLAG=true
-        break
     fi
 done <$FILE
 
