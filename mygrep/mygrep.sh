@@ -15,7 +15,7 @@ done
 
 
 # OPTIND starts from 1 and it gets increased by one everytime getopts processes an option
-# so we need to return it to 1 so we get process our arguments
+# so we need to return it to 1 so we can process our arguments
 # to ignore the options arguments
 shift $((OPTIND - 1))
 
